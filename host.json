@@ -9,7 +9,7 @@
   //    }
   //},
   "ApplicationInsights": {
-    "ConnectionString": "InstrumentationKey=58d48fe2-6108-4f1e-81f6-a32bd2d25ffa;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/",
-    "InstrumentationKey": "58d48fe2-6108-4f1e-81f6-a32bd2d25ffa"
+    "ConnectionString": "InstrumentationKey=69459370-7828-4af1-976e-d7f13d97ca74;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/",
+    "InstrumentationKey": "69459370-7828-4af1-976e-d7f13d97ca74"
   }
 }
