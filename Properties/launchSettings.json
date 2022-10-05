@@ -1,9 +1,13 @@
 {
   "profiles": {
     "FunctionAppLoggerTest": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7058",
-      "launchBrowser": false
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 33957,
+      "useSSL": false
     }
   }
 }
