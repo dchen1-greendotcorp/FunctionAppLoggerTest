@@ -1,14 +1,10 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
-using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,37 +30,16 @@ namespace FunctionAppLoggerTest
 
         public async Task<KeyVaultCertificateWithPolicy> CreateKvCertificate(string kvcertificateName)
         {
-            // Create a certificate. This starts a long running operation to create and sign the certificate.
-            //CertificateOperation operation = _certificateClient.StartCreateCertificate(certificateName, CertificatePolicy.Default);
-
-            //// You can await the completion of the create certificate operation.
-            //// You should run UpdateStatus in another thread or do other work like pumping messages between calls.
-            //while (!operation.HasCompleted)
-            //{
-            //    Thread.Sleep(2000);
-
-            //    operation.UpdateStatus();
-            //}
-
-            //KeyVaultCertificateWithPolicy certificate = operation.Value;
-            //return certificate;
-
-            var cert = await _certificateClient.GetCertificateAsync(kvcertificateName);
-            if (cert == null)
+            var operation = await _certificateClient.StartCreateCertificateAsync(kvcertificateName, CertificatePolicy.Default);
+            while (!operation.HasCompleted)
             {
-                var operation = await _certificateClient.StartCreateCertificateAsync(kvcertificateName, CertificatePolicy.Default);
-                while (!operation.HasCompleted)
-                {
-                    Thread.Sleep(2000);
+                Thread.Sleep(2000);
 
-                    operation.UpdateStatus();
-                }
-
-                KeyVaultCertificateWithPolicy certificate = operation.Value;
-                return certificate;
+                operation.UpdateStatus();
             }
 
-            return cert;
+            KeyVaultCertificateWithPolicy certificate = operation.Value;
+            return certificate;
         }
 
         public async Task<X509Certificate2> AddKvCertificateToLocal(string kvcertificateName)
@@ -88,7 +63,7 @@ namespace FunctionAppLoggerTest
                 _logger.LogInformation($"System find the certificate with Thumbprint {existCert.Thumbprint} at X509Store");
                 return existCert;
             }
-            
+
             using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser, OpenFlags.ReadWrite))
             {
                 store.Add(x509);
