@@ -40,9 +40,9 @@ namespace FunctionAppLoggerTest
 
             log.LogInformation($"using function log, msg={responseMessage}");
 
-            _gdlog.LogInformation($"using GDApplicationInsightsLogger _gdlog, _gdlog={responseMessage}");
+            _gdlog.LogInformation($"using GDApplicationInsightsLogger _gdlog, _gdlog={responseMessage} at {DateTime.Now}");
             
-            _logger.LogInformation($"using ILogger<HttpFunctionTest> _logger, msg={responseMessage}");
+            _logger.LogInformation($"using ILogger<HttpFunctionTest> _logger, msg={responseMessage} at {DateTime.Now}");
 
             log.LogTrace(responseMessage);
 
@@ -53,9 +53,9 @@ namespace FunctionAppLoggerTest
 
             log.LogError(new EventId(1, "DavidTest"),fakeException, "fake exception message", null);
 
-            await Task.Delay(1000);
+            //await Task.Delay(1000);
 
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult($"{responseMessage} at {DateTime.Now}");
         }
     }
 }

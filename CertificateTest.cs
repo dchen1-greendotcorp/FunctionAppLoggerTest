@@ -66,12 +66,12 @@ namespace FunctionAppLoggerTest
                 var cert = await _certificateService.AddKvCertificateToLocal(name);
                 if (cert != null)
                 {
-                    var responseMessage = $"Certificate {name} with Thumbprint '{cert.Thumbprint}' add to local successfully";
+                    var responseMessage = $"Certificate {name} with Thumbprint '{cert.Thumbprint}' add to local successfully at {DateTime.Now}";
                     log.LogInformation($"{responseMessage}");
                     return new OkObjectResult(responseMessage);
                 }
-                log.LogError($"Create certificate {name} failed.");
-                return new OkObjectResult($"Create certificate {name} failed.");
+                log.LogError($"Create certificate {name} failed at {DateTime.Now}.");
+                return new OkObjectResult($"Create certificate {name} failed at {DateTime.Now}.");
             }
             catch (Exception e)
             {
