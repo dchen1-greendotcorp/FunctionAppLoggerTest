@@ -2,6 +2,7 @@
 using Azure.Security.KeyVault.Certificates;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +16,17 @@ namespace FunctionAppLoggerTest
 {
     public class CertificateService : ICertificateService
     {
-        CertificateClient _certificateClient;
-        public CertificateService(IConfiguration configuration)
+        private CertificateClient _certificateClient;
+        private readonly ILogger<CertificateService> _logger;
+
+        public CertificateService(IConfiguration configuration, ILogger<CertificateService> logger)
         {
             // Create a new certificate client using the default credential from Azure.Identity using environment variables previously set,
             // including AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, and AZURE_TENANT_ID.
 
             ClientSecretCredential clientCredential = new ClientSecretCredential(configuration["tenant"], configuration["appId"], configuration["password"]);
             _certificateClient = new CertificateClient(vaultUri: new Uri(configuration["vaultUrl"]), credential: clientCredential);
+            this._logger = logger;
 
             //_certificateClient = new CertificateClient(vaultUri: new Uri(configuration["vaultUrl"]), credential: new DefaultAzureCredential());
         }
@@ -64,7 +68,7 @@ namespace FunctionAppLoggerTest
 
         public async Task<X509Certificate2> AddKvCertificateToLocal(string kvcertificateName)
         {
-            X509Certificate2 x509 = await GetX590CertificateFromKV(kvcertificateName);
+            X509Certificate2 x509 = await GetX590CertificateFromKV(kvcertificateName).ConfigureAwait(false);
             var thum = x509.Thumbprint;
 
             X509Certificate2 existCert = null;
@@ -75,24 +79,29 @@ namespace FunctionAppLoggerTest
 
             if (existCert != null)
             {
+                _logger.LogInformation($"System find the certificate with Thumbprint {existCert.Thumbprint} at X509Store");
                 return existCert;
             }
             
             using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser, OpenFlags.ReadWrite))
             {
                 store.Add(x509);
+
+                _logger.LogInformation($"System create the certificate with Thumbprint {x509.Thumbprint} at X509Store");
             }
 
             using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser, OpenFlags.ReadWrite))
             {
                 var cert = store.Certificates.FirstOrDefault(c => c.Thumbprint.Equals(thum));
+                _logger.LogInformation($"System find the certificate with Thumbprint {cert.Thumbprint} at X509Store");
+
                 return cert;
             }
         }
 
         private async Task<X509Certificate2> GetX590CertificateFromKV(string kvcertificateName)
         {
-            KeyVaultCertificateWithPolicy certificateWithPolicy = await _certificateClient.GetCertificateAsync(kvcertificateName);
+            KeyVaultCertificateWithPolicy certificateWithPolicy = await _certificateClient.GetCertificateAsync(kvcertificateName).ConfigureAwait(false);
             var cert_content = certificateWithPolicy.Cer;
             X509Certificate2 x509 = new X509Certificate2(cert_content);
             return x509;

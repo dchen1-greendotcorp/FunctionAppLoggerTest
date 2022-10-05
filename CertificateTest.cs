@@ -66,7 +66,7 @@ namespace FunctionAppLoggerTest
                 var cert = await _certificateService.AddKvCertificateToLocal(name);
                 if (cert != null)
                 {
-                    var responseMessage = $"Certificate {name} add to local successfully";
+                    var responseMessage = $"Certificate {name} with Thumbprint '{cert.Thumbprint}' add to local successfully";
                     log.LogInformation($"{responseMessage}");
                     return new OkObjectResult(responseMessage);
                 }
