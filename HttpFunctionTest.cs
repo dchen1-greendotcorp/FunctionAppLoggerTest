@@ -44,6 +44,8 @@ namespace FunctionAppLoggerTest
             
             _logger.LogInformation($"using ILogger<HttpFunctionTest> _logger, msg={responseMessage} at {DateTime.Now}");
 
+            _logger.LogInformation("Name is {Name}", name);
+
             log.LogTrace(responseMessage);
 
             log.LogError("No ERROR!");
