@@ -19,3 +19,5 @@ This is the Azure Function test project using .NET SDK for customize logger base
 
 ### 5. Using logger, example HttpFunctionTest function provide three different ways to log
 
+
+#Code CertificateTest, CertificateService also show how to download Azure Keyvault certificate and add local x509 store successfully.

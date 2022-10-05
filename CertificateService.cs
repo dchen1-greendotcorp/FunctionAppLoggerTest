@@ -69,6 +69,11 @@ namespace FunctionAppLoggerTest
         public async Task<X509Certificate2> AddKvCertificateToLocal(string kvcertificateName)
         {
             X509Certificate2 x509 = await GetX590CertificateFromKV(kvcertificateName).ConfigureAwait(false);
+            if (x509 == null)
+            {
+                throw new ArgumentNullException($"{kvcertificateName} does not exist.");
+            }
+
             var thum = x509.Thumbprint;
 
             X509Certificate2 existCert = null;
