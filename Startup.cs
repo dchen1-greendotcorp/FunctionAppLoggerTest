@@ -29,6 +29,7 @@ namespace FunctionAppLoggerTest
 
             //implement your own MaskService and register here
             builder.Services.AddSingleton<IMaskService, MaskService>();
+            builder.Services.AddScoped<ICertificateService, CertificateService>();
 
             // set logger filters 
             builder.Services.AddLogging(loggingBuilder =>

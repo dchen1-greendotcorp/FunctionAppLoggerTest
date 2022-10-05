@@ -1,11 +1,15 @@
 {
-    "version": "2.0"
-    //"logging": {
-    //    "applicationInsights": {
-    //        "samplingSettings": {
-    //            "isEnabled": true,
-    //            "excludedTypes": "Request"
-    //        }
-    //    }
-    //}
+  "version": "2.0",
+  //"logging": {
+  //    "applicationInsights": {
+  //        "samplingSettings": {
+  //            "isEnabled": true,
+  //            "excludedTypes": "Request"
+  //        }
+  //    }
+  //},
+  "ApplicationInsights": {
+    "ConnectionString": "InstrumentationKey=58d48fe2-6108-4f1e-81f6-a32bd2d25ffa;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/",
+    "InstrumentationKey": "58d48fe2-6108-4f1e-81f6-a32bd2d25ffa"
+  }
 }
