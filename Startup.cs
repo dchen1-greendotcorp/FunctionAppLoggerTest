@@ -18,12 +18,18 @@ namespace FunctionAppLoggerTest
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
+
+            var config=builder.ConfigurationBuilder.Build();
+            var conn = config["ConnectionString"];
+
+            builder.ConfigurationBuilder.AddAzureAppConfiguration(conn);
+
         }
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
             var config = builder.GetContext().Configuration;
-
+           
             //register GDApplicationInsights logger provider
             builder.Services.AddGDApplicationInsights(config);
 
