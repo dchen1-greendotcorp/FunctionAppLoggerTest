@@ -24,7 +24,8 @@ namespace FunctionAppLoggerTest
             // Create a new certificate client using the default credential from Azure.Identity using environment variables previously set,
             // including AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, and AZURE_TENANT_ID.
 
-            ClientSecretCredential clientCredential = new ClientSecretCredential(configuration["tenant"], configuration["appId"], configuration["aad:clientSecret"]);// configuration["password"]);
+            ClientSecretCredential clientCredential = new ClientSecretCredential(configuration["tenant"], configuration["appId"],
+                configuration["aad:clientSecret"]);// configuration["password"]);
             _certificateClient = new CertificateClient(vaultUri: new Uri(configuration["vaultUrl"]), credential: clientCredential);
             this._logger = logger;
 
