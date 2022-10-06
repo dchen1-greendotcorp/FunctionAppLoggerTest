@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using FunctionAppLoggerTest.MaskHandlers;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace FunctionAppLoggerTest
@@ -36,6 +37,7 @@ namespace FunctionAppLoggerTest
             //implement your own MaskService and register here
             builder.Services.AddSingleton<IMaskService, MaskService>();
             builder.Services.AddScoped<ICertificateService, CertificateService>();
+            builder.Services.AddSingleton<IMaskHandler, SSNMaskHandler>();
 
             // set logger filters 
             builder.Services.AddLogging(loggingBuilder =>

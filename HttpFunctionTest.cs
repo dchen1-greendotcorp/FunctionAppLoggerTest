@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using GreenDotShares;
 using Microsoft.ApplicationInsights;
+using FunctionAppLoggerTest.Models;
+using System.Collections.Generic;
 
 namespace FunctionAppLoggerTest
 {
@@ -38,22 +40,41 @@ namespace FunctionAppLoggerTest
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
 
-            log.LogInformation($"using function log, msg={responseMessage}");
+            //log.LogInformation($"using function log, msg={responseMessage}");
 
-            _gdlog.LogInformation($"using GDApplicationInsightsLogger _gdlog, _gdlog={responseMessage} at {DateTime.Now}");
-            
-            _logger.LogInformation($"using ILogger<HttpFunctionTest> _logger, msg={responseMessage} at {DateTime.Now}");
+            //_gdlog.LogInformation($"using GDApplicationInsightsLogger _gdlog, _gdlog={responseMessage} at {DateTime.Now}");
 
-            _logger.LogInformation("Name is {Name}", name);
+            //_logger.LogInformation($"using ILogger<HttpFunctionTest> _logger, msg={responseMessage} at {DateTime.Now}");
 
-            log.LogTrace(responseMessage);
+            Account account1 = new Account();
+            account1.Id = "0001";
+            account1.FirstName = "David1";
+            account1.LastName = "Chen1";
+            account1.SSN = "678184379";
 
-            log.LogError("No ERROR!");
-            log.LogWarning("No WARN!");
+            Account account2 = new Account();
+            account2.Id = "0002";
+            account2.FirstName = "David2";
+            account2.LastName = "Chen2";
+            account2.SSN = "678194376";
 
-            var fakeException = new Exception("fake exception");
+            Dictionary<string, Account> dict= new Dictionary<string, Account>();
+            dict[account1.Id] = account1;
+            dict[account2.Id] = account2;
 
-            log.LogError(new EventId(1, "DavidTest"),fakeException, "fake exception message", null);
+            _logger.LogInformation("Account is {Account}", account1);
+            _logger.LogInformation("AccountDict is {AccountDict}", dict);
+
+            //_logger.LogInformation("Name is {Name}", name);
+
+            //log.LogTrace(responseMessage);
+
+            //log.LogError("No ERROR!");
+            //log.LogWarning("No WARN!");
+
+            //var fakeException = new Exception("fake exception");
+
+            //log.LogError(new EventId(1, "DavidTest"),fakeException, "fake exception message", null);
 
             //await Task.Delay(1000);
 

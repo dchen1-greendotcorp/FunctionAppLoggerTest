@@ -1,13 +1,23 @@
 ﻿
+using FunctionAppLoggerTest.MaskHandlers;
 using GreenDotShares;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace FunctionAppLoggerTest
 {
     public class MaskService : IMaskService
     {
+        private readonly List<IMaskHandler> maskHandlers;
 
+        public MaskService(IEnumerable<IMaskHandler> maskHandlers)
+        {
+            this.maskHandlers = maskHandlers.ToList();
+        }
         /// <summary>
         /// Test only
         /// </summary>
@@ -18,18 +28,57 @@ namespace FunctionAppLoggerTest
         /// <exception cref="NotImplementedException"></exception>
         public string Mask<T>(T t, Exception exception)
         {
-            string result=string.Empty;
+            var data = t as IEnumerable<KeyValuePair<string, object>>;
+            if (data == null)
+            {
+                throw new ArgumentException($"{t} is not correct format.");
+            }
 
-            if(!t.Equals(null))
+            string key = "{OriginalFormat}";
+            Dictionary<string, object> dict = new Dictionary<string, object>(data);
+            string serialized;
+            if (dict.Count > 1)
             {
-                result= "David Mask:" + JsonConvert.SerializeObject(t, Newtonsoft.Json.Formatting.Indented);
+                dict.Remove(key);
+                serialized = JsonConvert.SerializeObject(dict, Newtonsoft.Json.Formatting.Indented);
             }
+            else
+            {
+                var val = dict[key];
+                serialized = JsonConvert.SerializeObject(val, Newtonsoft.Json.Formatting.Indented);
+            }
+
+            var jtoken = JToken.Parse(serialized);
+
+            var token = RecursiveMask(jtoken);//JsonHelper.RedactInformationRecursive(jtoken);
+
+            var result = JsonConvert.SerializeObject(token, Newtonsoft.Json.Formatting.Indented);
             
-            if(exception!=null)
-            {
-                result += $", Exception={JsonConvert.SerializeObject(t, Newtonsoft.Json.Formatting.Indented)}";
-            }
             return result;
+        }
+
+        private JToken RecursiveMask(JToken check)
+        {
+            if (check.Children().Any())
+            {
+                foreach (var child in check.Children())
+                {
+                    RecursiveMask(child);
+
+                    if (child.Type == JTokenType.Property)
+                    {
+                        var property = child as Newtonsoft.Json.Linq.JProperty;
+
+                        var handlers=maskHandlers.Where(c => c.KeyList.Any(d=>d.Equals(property.Name,StringComparison.OrdinalIgnoreCase))).ToList();
+                        foreach (var handler in handlers)
+                        {
+                            handler.Handle(property);
+                        }
+                    }
+
+                }
+            }
+            return check;
         }
     }
 }
