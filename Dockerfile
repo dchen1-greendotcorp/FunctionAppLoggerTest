@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["FunctionAppLoggerTest.csproj", "."]
 
-RUN dotnet nuget add source --username "dchen1-greendotcorp" --password "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" --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dchen1-greendotcorp/index.json"
+RUN dotnet nuget add source --username "dchen1-greendotcorp" --password "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" --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dchen1-greendotcorp/index.json"
 RUN dotnet restore "./FunctionAppLoggerTest.csproj"
 COPY . .
 WORKDIR "/src/."
