@@ -53,7 +53,7 @@ namespace FunctionAppLoggerTest
             var token = RecursiveMask(jtoken);//JsonHelper.RedactInformationRecursive(jtoken);
 
             var result = JsonConvert.SerializeObject(token, Newtonsoft.Json.Formatting.Indented);
-            
+
             return result;
         }
 
@@ -69,7 +69,7 @@ namespace FunctionAppLoggerTest
                     {
                         var property = child as Newtonsoft.Json.Linq.JProperty;
 
-                        var handlers=maskHandlers.Where(c => c.KeyList.Any(d=>d.Equals(property.Name,StringComparison.OrdinalIgnoreCase))).ToList();
+                        var handlers = maskHandlers.Where(c => c.KeyList.Any(d => d.Equals(property.Name, StringComparison.OrdinalIgnoreCase))).ToList();
                         foreach (var handler in handlers)
                         {
                             handler.Handle(property);
