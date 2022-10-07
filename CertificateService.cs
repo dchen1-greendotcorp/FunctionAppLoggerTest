@@ -82,14 +82,14 @@ namespace FunctionAppLoggerTest
 
         private async Task<X509Certificate2> GetX590CertificateFromKV(string kvcertificateName)
         {
-            var result = await _certificateClient.DownloadCertificateAsync(kvcertificateName).ConfigureAwait(false);
+            //var result = await _certificateClient.DownloadCertificateAsync(kvcertificateName).ConfigureAwait(false);
 
-            return result.Value;
+            //return result.Value;
 
-            //KeyVaultCertificateWithPolicy certificateWithPolicy = await _certificateClient.GetCertificateAsync(kvcertificateName).ConfigureAwait(false);
-            //var cert_content = certificateWithPolicy.Cer;
-            //X509Certificate2 x509 = new X509Certificate2(cert_content);
-            //return x509;
+            KeyVaultCertificateWithPolicy certificateWithPolicy = await _certificateClient.GetCertificateAsync(kvcertificateName).ConfigureAwait(false);
+            var cert_content = certificateWithPolicy.Cer;
+            X509Certificate2 x509 = new X509Certificate2(cert_content);
+            return x509;
         }
 
         //public async Task AddCertificateToLocal(string certificateName, string clientId, string clientSecret, string keyVaultAddress, string tenantId)
