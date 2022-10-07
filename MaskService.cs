@@ -68,11 +68,11 @@ namespace FunctionAppLoggerTest
                     if (child.Type == JTokenType.Property)
                     {
                         var property = child as Newtonsoft.Json.Linq.JProperty;
-
                         var handlers = maskHandlers.Where(c => c.KeyList.Any(d => d.Equals(property.Name, StringComparison.OrdinalIgnoreCase))).ToList();
-                        foreach (var handler in handlers)
+                        if(handlers.Any())
                         {
-                            handler.Handle(property);
+                            var handler = handlers.First();
+                            property.Value = handler.Mask(property.Value.Value<string>());
                         }
                     }
 

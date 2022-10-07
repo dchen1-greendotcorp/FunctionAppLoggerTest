@@ -10,15 +10,15 @@ namespace FunctionAppLoggerTest.MaskHandlers
     {
         public List<string> KeyList => new List<string>() { "SSN", "Social" };
 
-        public void Handle(JProperty jProperty)
-        {
-            if (KeyList.Any(c => jProperty.Name.Equals(c, StringComparison.OrdinalIgnoreCase)))
-            {
-                jProperty.Value = MaskSSN(jProperty.Value.Value<string>());
-            }
-        }
+        //public void Handle(JProperty jProperty)
+        //{
+        //    if (KeyList.Any(c => jProperty.Name.Equals(c, StringComparison.OrdinalIgnoreCase)))
+        //    {
+        //        jProperty.Value = Mask(jProperty.Value.Value<string>());
+        //    }
+        //}
 
-        private string MaskSSN(string originalSSN)
+        public string Mask(string originalSSN)
         {
             if (originalSSN.Length < 5) return originalSSN;
             var trailingNumbers = originalSSN.Substring(originalSSN.Length - 4);
