@@ -8,7 +8,6 @@ namespace FunctionAppLoggerTest.MaskHandlers
     public interface IMaskHandler
     {
         List<string> KeyList { get; }
-        //void Handle(JProperty jProperty);
 
         string Mask(string orginal);
     }

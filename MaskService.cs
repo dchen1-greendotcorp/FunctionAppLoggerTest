@@ -75,7 +75,6 @@ namespace FunctionAppLoggerTest
                             property.Value = handler.Mask(property.Value.Value<string>());
                         }
                     }
-
                 }
             }
             return jtoken;
