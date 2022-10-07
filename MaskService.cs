@@ -50,18 +50,18 @@ namespace FunctionAppLoggerTest
 
             var jtoken = JToken.Parse(serialized);
 
-            var token = RecursiveMask(jtoken);//JsonHelper.RedactInformationRecursive(jtoken);
+            var token = RecursiveMask(jtoken);
 
             var result = JsonConvert.SerializeObject(token, Newtonsoft.Json.Formatting.Indented);
 
             return result;
         }
 
-        private JToken RecursiveMask(JToken check)
+        private JToken RecursiveMask(JToken jtoken)
         {
-            if (check.Children().Any())
+            if (jtoken.Children().Any())
             {
-                foreach (var child in check.Children())
+                foreach (var child in jtoken.Children())
                 {
                     RecursiveMask(child);
 
@@ -78,7 +78,7 @@ namespace FunctionAppLoggerTest
 
                 }
             }
-            return check;
+            return jtoken;
         }
     }
 }
