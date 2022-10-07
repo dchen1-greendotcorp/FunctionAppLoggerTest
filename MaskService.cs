@@ -84,7 +84,7 @@ namespace FunctionAppLoggerTest
                         var property = child as JProperty;
                         if(_handlerDict.ContainsKey(property.Name.ToLower()))
                         {
-                            var handler = _handlerDict[property.Name];
+                            var handler = _handlerDict[property.Name.ToLower()];
                             property.Value = handler.Mask(property.Value.Value<string>());
                         }
                     }
