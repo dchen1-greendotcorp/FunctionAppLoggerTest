@@ -12,14 +12,28 @@ namespace FunctionAppLoggerTest
 {
     public class MaskService : IMaskService
     {
-        private readonly List<IMaskHandler> maskHandlers;
-
+        private readonly Dictionary<string, IMaskHandler> _handlerDict;
         public MaskService(IEnumerable<IMaskHandler> maskHandlers)
         {
-            this.maskHandlers = maskHandlers.ToList();
+            _handlerDict= GenerateHandlerDict(maskHandlers);
         }
+
+        private Dictionary<string, IMaskHandler> GenerateHandlerDict(IEnumerable<IMaskHandler> maskHandlers)
+        {
+            Dictionary<string, IMaskHandler> dict = new Dictionary<string, IMaskHandler>();
+            foreach(var handler in maskHandlers)
+            {
+                foreach(var key in handler.KeyList)
+                {
+                    dict[key.ToLower()] = handler;
+                }
+            }
+            return dict;
+        }
+
+
         /// <summary>
-        /// Test only
+        /// Use json serializer to generate logging data formate
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="t"></param>
@@ -40,19 +54,19 @@ namespace FunctionAppLoggerTest
             if (dict.Count > 1)
             {
                 dict.Remove(key);
-                serialized = JsonConvert.SerializeObject(dict, Newtonsoft.Json.Formatting.Indented);
+                serialized = JsonConvert.SerializeObject(dict, Formatting.Indented);
             }
             else
             {
                 var val = dict[key];
-                serialized = JsonConvert.SerializeObject(val, Newtonsoft.Json.Formatting.Indented);
+                serialized = JsonConvert.SerializeObject(val, Formatting.Indented);
             }
 
             var jtoken = JToken.Parse(serialized);
 
             var token = RecursiveMask(jtoken);
 
-            var result = JsonConvert.SerializeObject(token, Newtonsoft.Json.Formatting.Indented);
+            var result = JsonConvert.SerializeObject(token, Formatting.Indented);
 
             return result;
         }
@@ -67,11 +81,10 @@ namespace FunctionAppLoggerTest
 
                     if (child.Type == JTokenType.Property)
                     {
-                        var property = child as Newtonsoft.Json.Linq.JProperty;
-                        var handlers = maskHandlers.Where(c => c.KeyList.Any(d => d.Equals(property.Name, StringComparison.OrdinalIgnoreCase))).ToList();
-                        if(handlers.Any())
+                        var property = child as JProperty;
+                        if(_handlerDict.ContainsKey(property.Name.ToLower()))
                         {
-                            var handler = handlers.First();
+                            var handler = _handlerDict[property.Name];
                             property.Value = handler.Mask(property.Value.Value<string>());
                         }
                     }
