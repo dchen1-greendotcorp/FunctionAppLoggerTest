@@ -15,15 +15,15 @@ namespace FunctionAppLoggerTest
         private readonly Dictionary<string, IMaskHandler> _handlerDict;
         public MaskService(IEnumerable<IMaskHandler> maskHandlers)
         {
-            _handlerDict= GenerateHandlerDict(maskHandlers);
+            _handlerDict = GenerateHandlerDict(maskHandlers);
         }
 
         private Dictionary<string, IMaskHandler> GenerateHandlerDict(IEnumerable<IMaskHandler> maskHandlers)
         {
             Dictionary<string, IMaskHandler> dict = new Dictionary<string, IMaskHandler>();
-            foreach(var handler in maskHandlers)
+            foreach (var handler in maskHandlers)
             {
-                foreach(var key in handler.KeyList)
+                foreach (var key in handler.KeyList)
                 {
                     dict[key.ToLower()] = handler;
                 }
@@ -54,19 +54,22 @@ namespace FunctionAppLoggerTest
             if (dict.Count > 1)
             {
                 dict.Remove(key);
-                serialized = JsonConvert.SerializeObject(dict, Formatting.Indented);
+                serialized = JsonConvert.SerializeObject(dict, Formatting.Indented,
+                    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             }
             else
             {
                 var val = dict[key];
-                serialized = JsonConvert.SerializeObject(val, Formatting.Indented);
+                serialized = JsonConvert.SerializeObject(val, Formatting.Indented,
+                    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
             }
 
             var jtoken = JToken.Parse(serialized);
 
             var token = RecursiveMask(jtoken);
 
-            var result = JsonConvert.SerializeObject(token, Formatting.Indented);
+            var result = JsonConvert.SerializeObject(token, Formatting.Indented,
+                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
             return result;
         }
@@ -82,7 +85,7 @@ namespace FunctionAppLoggerTest
                     if (child.Type == JTokenType.Property)
                     {
                         var property = child as JProperty;
-                        if(_handlerDict.ContainsKey(property.Name.ToLower()))
+                        if (_handlerDict.ContainsKey(property.Name.ToLower()))
                         {
                             var handler = _handlerDict[property.Name.ToLower()];
                             property.Value = handler.Mask(property.Value.Value<string>());
