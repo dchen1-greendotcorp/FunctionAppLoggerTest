@@ -3,7 +3,9 @@ using Azure.Security.KeyVault.Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,8 +22,8 @@ namespace FunctionAppLoggerTest
             // Create a new certificate client using the default credential from Azure.Identity using environment variables previously set,
             // including AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, and AZURE_TENANT_ID.
 
-            ClientSecretCredential clientCredential = new ClientSecretCredential(configuration["tenant"], configuration["appId"],
-                configuration["aad:clientSecret"]);// configuration["password"]);
+            ClientSecretCredential clientCredential = new ClientSecretCredential(configuration["tenant"],
+                configuration["appId"], configuration["password"]);// configuration["aad:clientSecret"]);
             _certificateClient = new CertificateClient(vaultUri: new Uri(configuration["vaultUrl"]), credential: clientCredential);
             this._logger = logger;
 
@@ -44,6 +46,8 @@ namespace FunctionAppLoggerTest
 
         public async Task<X509Certificate2> AddKvCertificateToLocal(string kvcertificateName)
         {
+            var list = FindAllReadWriteLocations();
+
             X509Certificate2 x509 = await GetX590CertificateFromKV(kvcertificateName).ConfigureAwait(false);
             if (x509 == null)
             {
@@ -53,6 +57,8 @@ namespace FunctionAppLoggerTest
             var thum = x509.Thumbprint;
 
             X509Certificate2 existCert = null;
+            
+
             using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser, OpenFlags.ReadWrite))
             {
                 existCert = store.Certificates.FirstOrDefault(c => c.Thumbprint.Equals(thum));
@@ -118,5 +124,30 @@ namespace FunctionAppLoggerTest
         //    }
         //    return null;
         //}
+    
+    
+        private List<string> FindAllReadWriteLocations()
+        {
+            List<string> list=new List<string>();
+            foreach (StoreLocation storeLocation in (StoreLocation[])Enum.GetValues(typeof(StoreLocation)))
+            {
+                foreach (StoreName storeName in (StoreName[])Enum.GetValues(typeof(StoreName)))
+                {
+                    X509Store store = new X509Store(storeName, storeLocation);
+
+                    try
+                    {
+                        store.Open(OpenFlags.ReadWrite);
+                        list.Add($"{storeName}-{storeLocation}: ReadWrite");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("No   ReadWrite to access {0}, {1}",
+                            store.Name, store.Location);
+                    }
+                }
+            }
+            return list;
+        }
     }
 }

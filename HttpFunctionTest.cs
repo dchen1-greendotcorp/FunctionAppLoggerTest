@@ -7,10 +7,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using GreenDotShares;
-using Microsoft.ApplicationInsights;
 using FunctionAppLoggerTest.Models;
 using System.Collections.Generic;
+using GreenDotLogger;
 
 namespace FunctionAppLoggerTest
 {

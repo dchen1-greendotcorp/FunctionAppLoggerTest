@@ -1,14 +1,11 @@
-﻿
-using FunctionAppLoggerTest.MaskHandlers;
-using GreenDotShares;
+﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using GreenDotLogger;
 using System.Linq;
 
-namespace FunctionAppLoggerTest
+namespace GreenDotLogger
 {
     public class MaskService : IMaskService
     {
